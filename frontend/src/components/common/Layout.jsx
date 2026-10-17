@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { AppDataContext } from '../../context/AppDataContext';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Home, FileText, FileBadge, Activity, Bell, HelpCircle, ExternalLink, Menu, LogOut, X, PieChart, CheckSquare, Settings } from 'lucide-react';
+import { Home, FileText, FileBadge, Activity, Bell, HelpCircle, ExternalLink, Menu, LogOut, X, PieChart, CheckSquare, Settings, Database } from 'lucide-react';
 
 export const Layout = ({ children }) => {
   const { user, logout } = useContext(AuthContext);
@@ -29,6 +29,7 @@ export const Layout = ({ children }) => {
 
   const adminLinks = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: <PieChart size={18} /> },
+    { name: 'Master Student Sheet', path: '/admin/master-sheet', icon: <Database size={18} /> },
     { name: 'Applications', path: '/admin/applications', icon: <FileText size={18} /> },
     { name: 'Verification Queue', path: '/admin/verification', icon: <CheckSquare size={18} /> },
     { name: 'Notifications', path: '/admin/notifications', icon: <Bell size={18} /> },

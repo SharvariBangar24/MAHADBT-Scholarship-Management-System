@@ -1,0 +1,12 @@
+{
+  "name": "mahadbt-prototype",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MAHADBT Scholarship Management and Tracking System",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm run dev",
+    "dev": "node start-all.js"
+  }
+}

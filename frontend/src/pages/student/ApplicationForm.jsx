@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Layout } from '../../components/common/Layout';
 import { AppDataContext } from '../../context/AppDataContext';
 import { AuthContext } from '../../context/AuthContext';
@@ -6,31 +6,52 @@ import { useNavigate } from 'react-router-dom';
 
 const ApplicationForm = () => {
   const { applications, submitApplication } = useContext(AppDataContext);
-  const { user } = useContext(AuthContext);
+  const { user, studentProfile } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const existingApp = applications.find(a => a.studentId === user.id);
 
   const [formData, setFormData] = useState({
     scholarshipName: 'Post-Matric Scholarship',
-    category: 'OBC',
-    income: '150000',
-    aadhaar: '123456789012',
-    bankAccount: '1234567890',
-    ifsc: 'SBIN0001234'
+    category: studentProfile?.category || 'OBC',
+    income: studentProfile?.income && studentProfile.income !== 'Not Provided' ? studentProfile.income : '150000',
+    aadhaar: studentProfile?.aadhaar || '123456789012',
+    bankAccount: studentProfile?.bank_account || '1234567890',
+    ifsc: studentProfile?.ifsc || 'SBIN0001234'
   });
+
+  useEffect(() => {
+    if (studentProfile) {
+      setFormData(prev => ({
+        ...prev,
+        category: studentProfile.category || prev.category,
+        income: studentProfile.income && studentProfile.income !== 'Not Provided' ? studentProfile.income : prev.income,
+        aadhaar: studentProfile.aadhaar || prev.aadhaar,
+        bankAccount: studentProfile.bank_account || prev.bankAccount,
+        ifsc: studentProfile.ifsc || prev.ifsc
+      }));
+    }
+  }, [studentProfile]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const department = studentProfile?.department || 'Information Technology';
+  const year = studentProfile?.year || 'First Year';
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const id = submitApplication({
+    const id = await submitApplication({
       studentId: user.id,
       studentName: user.name,
-      department: 'Information Technology', // mock fixed for demo
-      year: 'Third Year',
+      department: department,
+      year: year,
       academicYear: '2025-2026',
-      scholarshipName: formData.scholarshipName
+      scholarshipName: formData.scholarshipName,
+      category: formData.category,
+      income: formData.income,
+      aadhaar: formData.aadhaar,
+      bankAccount: formData.bankAccount,
+      ifsc: formData.ifsc
     });
     navigate('/student/acknowledgement', { state: { appId: id } });
   };
@@ -45,7 +66,7 @@ const ApplicationForm = () => {
             <div><span style={{color:'var(--color-text-muted)'}}>Application ID:</span> <strong>{existingApp.id}</strong></div>
             <div><span style={{color:'var(--color-text-muted)'}}>Scholarship:</span> <strong>{existingApp.scholarshipName}</strong></div>
             <div><span style={{color:'var(--color-text-muted)'}}>Status:</span> <strong>{existingApp.status}</strong></div>
-            <div><span style={{color:'var(--color-text-muted)'}}>Submitted On:</span> <strong>{new Date(existingApp.submittedDate).toLocaleDateString()}</strong></div>
+            <div><span style={{color:'var(--color-text-muted)'}}>Submitted On:</span> <strong>{existingApp.submittedDate ? new Date(existingApp.submittedDate).toLocaleDateString() : 'Draft'}</strong></div>
           </div>
           <button className="btn btn-primary" style={{ marginTop: '16px' }} onClick={() => navigate('/student/track')}>
             Track Status
@@ -82,6 +103,7 @@ const ApplicationForm = () => {
                 <option value="SC">SC</option>
                 <option value="ST">ST</option>
                 <option value="VJNT">VJNT</option>
+                <option value="EBC">EBC</option>
               </select>
             </div>
             <div className="form-group">
@@ -93,12 +115,12 @@ const ApplicationForm = () => {
           <h3 style={{ marginBottom: '16px', marginTop: '24px', borderBottom: '1px solid var(--color-border)', paddingBottom: '8px' }}>Academic & Scholarship Details</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="form-group">
-              <label className="form-label">Department</label>
-              <input type="text" className="form-control" value="Information Technology" disabled />
+              <label className="form-label">Department / Branch</label>
+              <input type="text" className="form-control" value={department} disabled />
             </div>
             <div className="form-group">
               <label className="form-label">Year of Study</label>
-              <input type="text" className="form-control" value="Third Year" disabled />
+              <input type="text" className="form-control" value={year} disabled />
             </div>
             <div className="form-group" style={{ gridColumn: 'span 2' }}>
               <label className="form-label">Select Scholarship Scheme</label>

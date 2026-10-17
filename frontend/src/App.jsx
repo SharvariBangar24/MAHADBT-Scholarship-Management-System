@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -15,6 +16,7 @@ import Help from './pages/student/Help';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import MasterStudentSheet from './pages/admin/MasterStudentSheet';
 import Applications from './pages/admin/Applications';
 import ApplicationDetail from './pages/admin/ApplicationDetail';
 import DocumentVerification from './pages/admin/DocumentVerification';
@@ -37,6 +39,9 @@ function App() {
         <Route path="/" element={
           user ? (user.role === 'student' ? <Navigate to="/student/dashboard" /> : <Navigate to="/admin/dashboard" />) : <LoginPage />
         } />
+        <Route path="/register" element={
+          user ? (user.role === 'student' ? <Navigate to="/student/dashboard" /> : <Navigate to="/admin/dashboard" />) : <RegisterPage />
+        } />
         
         {/* Student Routes */}
         <Route path="/student/dashboard" element={<ProtectedRoute allowedRole="student"><StudentDashboard /></ProtectedRoute>} />
@@ -49,6 +54,7 @@ function App() {
         
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={<ProtectedRoute allowedRole="admin"><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/master-sheet" element={<ProtectedRoute allowedRole="admin"><MasterStudentSheet /></ProtectedRoute>} />
         <Route path="/admin/applications" element={<ProtectedRoute allowedRole="admin"><Applications /></ProtectedRoute>} />
         <Route path="/admin/applications/:id" element={<ProtectedRoute allowedRole="admin"><ApplicationDetail /></ProtectedRoute>} />
         <Route path="/admin/verification" element={<ProtectedRoute allowedRole="admin"><DocumentVerification /></ProtectedRoute>} />
